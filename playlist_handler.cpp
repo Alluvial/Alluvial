@@ -4,7 +4,7 @@
 playlist_handler::playlist_handler()
 {
     this->name = "Untitled Playlist";
-    this->songs = new playlist_item[];
+    this->songs = std::vector<playlist_item>();
     this->activeSong = 0;
     this->shuffle = false;
     this->repeat = false;
@@ -20,25 +20,25 @@ playlist_handler::~playlist_handler()
  * \param songToMove The song that is to be relocated
  * \param newPosition Where we want the song to end up in the playlist
 */
-playlist_handler::moveSong(playlist_item songToMove, int newPosition)
+void playlist_handler::moveSong(playlist_item songToMove, int newPosition)
 {
-    QString deleteSongHash = songToMove.hash;
+    QString deleteSongHash = songToMove.getHash();
     for ( int index = 0; index < this->songs.size() ; index++ )
     {
-        if ( this->songs[index].hash == deleteSongHash )
+        if ( this->songs[index].getHash() == deleteSongHash )
         {
-            this->songs.erase(index);
+            this->songs.erase(this->songs.begin() + index);
             break;
         }
     }
-    this->songs.insert(newPosition, songToMove)
+    this->songs.insert(this->songs.begin() + newPosition, songToMove);
 }
 
 /*!
  * \brief playlist_handler::addSong Add a song to the start of the playlist
  * \param newSong The song to be added
  */
-playlist_handler::addSong(playlist_item newSong)
+void playlist_handler::addSong(playlist_item newSong)
 {
     this->songs.insert(this->songs.begin(), newSong);
 }
@@ -47,14 +47,14 @@ playlist_handler::addSong(playlist_item newSong)
  * \brief playlist_handler::removeSong Used to remove a song from the playlist
  * \param deleteSong The song to be deleted from the playlist
  */
-playlist_handler::removeSong(playlist_item deleteSong)
+void playlist_handler::removeSong(playlist_item deleteSong)
 {
-    QString deleteSongHash = deleteSong.hash;
+    QString deleteSongHash = deleteSong.getHash();
     for ( int index = 0; index < this->songs.size() ; index++ )
     {
-        if ( this->songs[index].hash == deleteSongHash )
+        if ( this->songs[index].getHash() == deleteSongHash )
         {
-            this->songs.erase(index);
+            this->songs.erase(this->songs.begin() + index);
             break;
         }
     }
@@ -63,7 +63,7 @@ playlist_handler::removeSong(playlist_item deleteSong)
 /*!
  * \brief The playlist incrementer
 */
-playlist_handler::nextSong()
+void playlist_handler::nextSong()
 {
     this->activeSong = this->activeSong + 1;
     if ( this->activeSong >= this->songs.size() )
@@ -75,7 +75,7 @@ playlist_handler::nextSong()
 /*!
  * \brief The playlist decrementer
  */
-playlist_handler::previousSong()
+void playlist_handler::previousSong()
 {
     this->activeSong = this->activeSong - 1;
     if ( this->activeSong < 0 )
@@ -88,11 +88,11 @@ playlist_handler::previousSong()
  * \brief playlist_handler::jumpToSong Jump to song by hash
  * \param newSongHash The hash of the song we want to jump to
  */
-playlist_handler::jumpToSong(QString newSongHash)
+void playlist_handler::jumpToSong(QString newSongHash)
 {
     for ( int index = 0; index < this->songs.size() ; index++ )
     {
-        if ( this->songs[index].hash == newSongHash )
+        if ( this->songs[index].getHash() == newSongHash )
         {
             this->activeSong = index;
             break;
@@ -104,7 +104,7 @@ playlist_handler::jumpToSong(QString newSongHash)
  * \brief playlist_handler::jumpToSong Skip to song position
  * \param newIndex The index to jump to
  */
-playlist_handler::jumpToSong(int newIndex)
+void playlist_handler::jumpToSong(int newIndex)
 {
     this->activeSong = newIndex;
 }
@@ -112,21 +112,43 @@ playlist_handler::jumpToSong(int newIndex)
 /*!
  * \brief Get the hash of the song to be played.
  */
-playlist_handler::getActiveSongHash()
+QString playlist_handler::getActiveSongHash()
 {
-    return this->songs[activeSong].hash;
+    return this->songs[activeSong].getHash();
 }
 
 /*!
  * \brief playlist_handler::getSongHash Get the hash of a song by its index
  * \param songIndex The index of the song to be gotten
  */
-playlist_handler::getSongHash(int songIndex)
+QString playlist_handler::getSongHash(int songIndex)
 {
-    return this->songs[songIndex].hash;
+    return this->songs[songIndex].getHash();
 }
 
+void playlist_handler::repeatButton()
+{
+    if (this->repeat)
+    {
+        this->repeat = false;
+    }
+    else
+    {
+        this->repeat = true;
+    }
+}
 
+void playlist_handler::shuffleButton()
+{
+    if (this->repeat)
+    {
+        this->repeat = false;
+    }
+    else
+    {
+        this->repeat = true;
+    }
+}
 
 
 

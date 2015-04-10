@@ -19,9 +19,15 @@ public:
     QString getActiveSongHash();
     QString getSongHash(int);
 
+public slots:
+    void repeatButton();
+    void shuffleButton();
+    void previousSong();
+    void nextSong();
+
 private:
     QString name;
-    std::vector<playlist_item> songs{}; /**< The array of the hashes of the songs that belong to this playlist */
+    std::vector<playlist_item> songs{}; /**< The array of the songs that belong to this playlist */
     int activeSong; /**< The index of the current song that is playing */
     bool shuffle; ///< The shuffle toggle
     bool repeat; ///< The repeat toggle

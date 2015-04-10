@@ -19,6 +19,7 @@ public slots:
     void skipTo(int);
     void playOrPause();
     void setVolume(int);
+    void rewind();
     void fastForward();
     void durationChanged(qint64);
 

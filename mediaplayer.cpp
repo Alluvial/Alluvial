@@ -29,11 +29,18 @@ mediaPlayer::~mediaPlayer()
 
 }
 
+/*!
+ * \brief mediaPlayer::play Continue the song to play
+ */
 void mediaPlayer::play ()
 {
     player->play();
 }
 
+/*!
+ * \brief mediaPlayer::play Play a brand new song
+ * \param data The data of the song to play
+ */
 void mediaPlayer::play (QByteArray data)
 {
     QFile tmp_file("tmp.mp3");
@@ -58,11 +65,17 @@ void mediaPlayer::play (QByteArray data)
     player->play();
 }
 
+/*!
+ * \brief mediaPlayer::pause Pause the current song
+ */
 void mediaPlayer::pause ()
 {
     player->pause();
 }
 
+/*!
+ * \brief mediaPlayer::playOrPause Switch the playback state
+ */
 void mediaPlayer::playOrPause()
 {
     int state = player->state();
@@ -77,22 +90,45 @@ void mediaPlayer::playOrPause()
     }
 }
 
+/*!
+ * \brief mediaPlayer::skipTo Jump to a specific position in the song
+ * \param position The position to jump to in milliseconds
+ */
 void mediaPlayer::skipTo(int position)
 {
     // position in milliseconds
     player->setPosition(position);
 }
 
+/*!
+ * \brief mediaPlayer::setVolume Change the playback volume
+ * \param vol The value to change to on a scale of 1 - 100
+ */
 void mediaPlayer::setVolume(int vol)
 {
     player->setVolume(vol);
 }
 
+/*!
+ * \brief mediaPlayer::rewind Skip ahead 10 seconds
+ */
+void mediaPlayer::rewind()
+{
+    player->setPosition(player->position()-10000);
+}
+
+/*!
+ * \brief mediaPlayer::fastForward Skip ahead 10 seconds
+ */
 void mediaPlayer::fastForward()
 {
     player->setPosition(player->position()+10000);
 }
 
+/*!
+ * \brief mediaPlayer::durationChanged Change the duration of the song. NEEDS FIXING!!!
+ * \param duration The length of the song in seconds
+ */
 void mediaPlayer::durationChanged(qint64 duration)
 {
     QQmlApplicationEngine engine;

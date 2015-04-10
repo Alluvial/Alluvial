@@ -143,6 +143,7 @@ ColumnLayout {
                 width: parent.width * 0.3
 
                 ToolButton {
+                    objectName: "shuffleButton"
                     id: shuffleButton
                     anchors.left: parent.left
                     anchors.leftMargin: parent.width * 0.05
@@ -186,6 +187,7 @@ ColumnLayout {
                 }
 
                 ToolButton {
+                    objectName: "repeatButton"
                     id: repeatButton
                     anchors.right: parent.right
                     anchors.rightMargin: parent.width * 0.05
@@ -240,6 +242,7 @@ ColumnLayout {
                 Layout.maximumWidth: 160
 
                 Button {
+                    objectName: "leftSkipButton"
                     id: leftSkipButton
                     x: parent.width * 0.05
                     y: (parent.height - this.height) / 2
@@ -249,6 +252,7 @@ ColumnLayout {
                 }
 
                 Button {
+                    objectName: "rewindButton"
                     id: rewindButton
                     x: parent.width * 0.21
                     y: (parent.height - this.height) / 2
@@ -335,6 +339,7 @@ ColumnLayout {
                 }
 
                 Button {
+                    objectName: "rightSkipButton"
                     id: rightSkipButton
                     x: parent.width * 0.83
                     y: (parent.height - this.height) / 2

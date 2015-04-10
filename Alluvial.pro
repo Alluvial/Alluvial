@@ -21,4 +21,5 @@ HEADERS += \
     playlist_handler.h \
     playlist_item.h
 DISTFILES += \
-    qmldir.txt
+    qmldir.txt \
+    Doxyfile

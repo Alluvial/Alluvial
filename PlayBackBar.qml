@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 import Alluvial.Globals 1.0
+import QtMultimedia 5.4
 
 ColumnLayout {
     width: parent.width * 0.8
@@ -14,6 +15,7 @@ ColumnLayout {
 
     QtObject {
         id: activeSongMeta
+        objectName: "activeSongMeta"
         property string hash: '#0'
         property string songName: "Shake it off"
         property string album: "1989"
@@ -59,40 +61,19 @@ ColumnLayout {
             }
 
             Slider {
+                objectName: "playbackSlider"
                 id: playbackSlider
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                maximumValue: activeSongMeta.length
                 stepSize: 1
                 tickmarksEnabled: false
+                updateValueWhileDragging: false
 
-                states: [
-                    State {
-                        name: 'newSong'
-                        PropertyChanges {
-                            target: activeSongMeta
-                            hash: Globals.hash
-                            songName: Globals.songName
-                            album: Globals.album
-                            albumArt: Globals.albumArt
-                            artist: Globals.artist
-                            length: Globals.length
-                            size: Globals.size
-                        }
-                        PropertyChanges {
-                            target: playbackSlider
-                            value: 0
-                            maximumValue: activeSongMeta.length
-                        }
-                        PropertyChanges {
-                            target: playButton
-                            state: 'play'
-                        }
-                    }
-                ]
+                signal playbackPosChanged(int val);
 
                 onValueChanged: {
+                    playbackSlider.playbackPosChanged(playbackSlider.value*1000)
 
                     if (playbackSlider.value >= playbackSlider.maximumValue)
                     {
@@ -104,18 +85,19 @@ ColumnLayout {
 
             Item {
                 id: statusBar
+                objectName: "statusBar"
                 anchors.left: playbackSlider.left
                 anchors.right: playbackSlider.right
                 anchors.top: playbackSlider.bottom
                 anchors.bottom: parent.bottom
 
-                Text {
+                Label {
                     id: songStart
                     text: "0:00"
                     anchors.left: parent.left
                 }
 
-                Text {
+                Label {
                     id: songPosition
                     text: {
                         if (playbackSlider.value % 60 < 10)
@@ -131,19 +113,14 @@ ColumnLayout {
                     anchors.centerIn: parent
                 }
 
-                Text {
+                Label {
+                    objectName: "songEnd"
                     id: songEnd
-                    text: {
-                        if (playbackSlider.maximumValue % 60 < 10)
-                        {
-                            Math.floor(playbackSlider.maximumValue / 60).toString() + ':0' + Math.floor(playbackSlider.maximumValue % 60).toString()
-                        }
-                        else
-                        {
-                            Math.floor(playbackSlider.maximumValue / 60).toString() + ':' + Math.floor(playbackSlider.maximumValue % 60).toString()
-                        }
-                    }
                     anchors.right: parent.right
+
+                    onTextChanged: {
+                        console.log("SongEnd Text = " + songEnd.text)
+                    }
                 }
             }
         }
@@ -262,33 +239,39 @@ ColumnLayout {
                 Layout.minimumWidth: 160
                 Layout.maximumWidth: 160
 
-                ToolButton {
+                Button {
                     id: leftSkipButton
                     x: parent.width * 0.05
                     y: (parent.height - this.height) / 2
                     width: parent.width * 0.12
-                    text: "<<"
                     iconName: "skip_left"
                     iconSource: "icons/previous.png"
                 }
 
-                ToolButton {
+                Button {
                     id: rewindButton
                     x: parent.width * 0.21
                     y: (parent.height - this.height) / 2
                     width: parent.width * 0.12
-                    text: "<"
                     iconName: "rewind"
                     iconSource: "icons/player_start.png"
                 }
 
-                ToolButton {
+                Button {
                     id: playButton
+                    objectName: "playButton"
                     x: parent.width * 0.375
                     y: (parent.height - this.height) / 2
                     width: parent.width * 0.25
                     state: "play"
+
+                    signal qmlSig(string msg);
+                    signal playClicked();
+
                     onClicked: {
+                        playButton.playClicked();
+                        playButton.qmlSig("RAWR I'M A BALLOON");
+
                         if (playbackSlider.value >= playbackSlider.maximumValue)
                         {
                             playButton.state = 'pause'
@@ -338,22 +321,24 @@ ColumnLayout {
                     ]
                 }
 
-                ToolButton {
+                Button {
+                    objectName: "fastForwardButton"
                     id: fastForwardButton
                     x: parent.width * 0.67
                     y: (parent.height - this.height) / 2
                     width: parent.width * 0.12
-                    text: ">"
                     iconName: "fast_forward"
                     iconSource: "icons/player_fwd.png"
+
+                    signal heldDown();
+
                 }
 
-                ToolButton {
+                Button {
                     id: rightSkipButton
                     x: parent.width * 0.83
                     y: (parent.height - this.height) / 2
                     width: parent.width * 0.12
-                    text: ">>"
                     iconName: "skip_track"
                     iconSource: "icons/next_track.png"
                 }
@@ -367,12 +352,18 @@ ColumnLayout {
                 anchors.bottom: parent.bottom
 
                 Slider {
+                    objectName: "volumeSlider"
                     id: volumeSlider
                     anchors.right: parent.right
                     width: 10
                     minimumValue: 0
                     maximumValue: 100
                     stepSize: 1
+                    signal changeVol(int val)
+
+                    onValueChanged: {
+                        volumeSlider.changeVol(volumeSlider.value)
+                    }
                 }
 
             }

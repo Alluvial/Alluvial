@@ -6,69 +6,51 @@
 #include <QDebug>
 #include <QUrl>
 #include "settings_storage.h"
+#include "mediaplayer.h"
 #include <QtQml>
-
-/*
-Settings::Settings(QObject *parent): QObject(parent){
-
-}
-
-void Settings::setValue(const QString &key, const QVariant &value){
-    client_settings.setValue(key, value);
-}
-QVariant Settings::value(const QString &key, const QVariant &defaultValue) const{
-    return client_settings.value(key, defaultValue);
-}
-*/
+#include <QMediaPlayer>
 
 int main(int argc, char *argv[])
 {
-
     qmlRegisterSingletonType(QUrl("qrc:/GlobalVars.qml"), "Alluvial.Globals", 1, 0, "Globals");
-    qmlRegisterType<Settings_storing>("AlluvialSettings", 0, 1, "ClientSettings");
-
 
 	QApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
     app.setOrganizationName("AlluvialAlphaBuild");
-    app.setOrganizationDomain("couponbug.com");
     app.setApplicationName("Alluvial");
 
     Settings_storing *settings = new Settings_storing();
-
-
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     engine.rootContext()->setContextProperty("clientSettings", settings);
 
-    /*
-     * IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     * ("../Alluvial/main.qml")
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     * IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    QQuickView *view = new QQuickView;
-    QScopedPointer<QApplication> application(new QApplication(argc, argv));
-    //QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
-    Settings* settings = new Settings(application.data());
-    QUrl url("file:///home/jefferson/Code/Alluvial/Alluvial");
+    QObject *root = engine.rootObjects().first();
+    QObject *playButton = root->findChild<QObject*>("playButton");
+    QObject *playbackSlider = root->findChild<QObject*>("playbackSlider");
+    QObject *volSlider = root->findChild<QObject*>("volumeSlider");
+    QObject *ffButton = root->findChild<QObject*>("fastForwardButton");
 
+    mediaPlayer *mp = new mediaPlayer();
 
-    view->rootContext()->setContextProperty("settings", settings);
-    view->setSource();
-    view->showNormal();
+    // Pause or play the song
+    QObject::connect(playButton, SIGNAL(playClicked()),
+        mp, SLOT(playOrPause()));
 
-   // engine = new QQmlEngine;
-   // QQmlEngine *qmlengine = new QQmlEngine;
-   // qmlengine->rootContext()->setContextProperty("settings", settings);
-   //  component = new QQmlComponent(qmlengine);
+    // Adjust the volume according to the position of the volume slider
+    QObject::connect(volSlider, SIGNAL(changeVol(int)),
+        mp, SLOT(setVolume(int)));
 
+    // Skip ahead - NEEDS TO BE FIXED TO HANDLE HOLD DOWN
+    QObject::connect(ffButton, SIGNAL(clicked()),
+        mp, SLOT(fastForward()));
 
+    // Skip to position based off of the slider
+    QObject::connect(playbackSlider, SIGNAL(playbackPosChanged(int)),
+        mp, SLOT(skipTo(int)));
 
-    QObject *topLevel = engine.rootObjects().value(0);
-    QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
+    // Skip to position based off of the slider
+    QObject::connect(playbackSlider, SIGNAL(playbackPosChanged(int)),
+        mp, SLOT(skipTo(int)));
 
-    window->show();
-*/
     return app.exec();
 }

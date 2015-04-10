@@ -50,5 +50,3 @@ class Settings_storing:public QSettings{
 Q_DECLARE_METATYPE(Settings_storing*)
 
 #endif // SETTINGS_STORAGE
-
-

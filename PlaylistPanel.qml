@@ -1,8 +1,10 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
+import QtMultimedia 5.0
 
 ColumnLayout {
+
     id: playlistPanel
     x: parent.width * 0.8
     y: 0
@@ -55,7 +57,6 @@ ColumnLayout {
             }
 
             model: playlistOptions
-
         }
 
         Rectangle {
